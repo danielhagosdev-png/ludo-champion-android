@@ -1,0 +1,82 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+}
+
+/* 3D Dice styling */
+.dice-cube {
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.dice-face {
+  backface-visibility: hidden;
+}
+
+/* Authentic Ludo King Blue Dice Background Pattern */
+.ludo-king-bg {
+  background-color: #0c2b55;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(20, 80, 160, 0.4) 0%, transparent 80%),
+    url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23194a85' fill-opacity='0.35'%3E%3Crect x='10' y='10' width='40' height='40' rx='8' fill='%231b4e8c' fill-opacity='0.45' stroke='%232563eb' stroke-opacity='0.25' stroke-width='2'/%3E%3Ccircle cx='20' cy='20' r='3.5' fill='%2338bdf8' fill-opacity='0.4'/%3E%3Ccircle cx='40' cy='20' r='3.5' fill='%2338bdf8' fill-opacity='0.4'/%3E%3Ccircle cx='20' cy='40' r='3.5' fill='%2338bdf8' fill-opacity='0.4'/%3E%3Ccircle cx='40' cy='40' r='3.5' fill='%2338bdf8' fill-opacity='0.4'/%3E%3Crect x='70' y='70' width='40' height='40' rx='8' fill='%231b4e8c' fill-opacity='0.45' stroke='%232563eb' stroke-opacity='0.25' stroke-width='2'/%3E%3Ccircle cx='80' cy='80' r='3.5' fill='%2338bdf8' fill-opacity='0.4'/%3E%3Ccircle cx='100' cy='100' r='3.5' fill='%2338bdf8' fill-opacity='0.4'/%3E%3Ccircle cx='90' cy='90' r='3.5' fill='%2338bdf8' fill-opacity='0.4'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Safe star shine */
+@keyframes star-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.8));
+  }
+}
+
+.animate-star {
+  animation: star-pulse 2.2s infinite ease-in-out;
+}
+
+/* Token movable bounce */
+@keyframes token-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 14px 4px rgba(255, 255, 255, 0.7);
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 1), 0 0 20px 8px rgba(255, 255, 255, 0.95);
+    transform: translateY(-4px) scale(1.08);
+  }
+}
+
+.animate-token-movable {
+  animation: token-glow 1.2s infinite ease-in-out;
+  cursor: pointer;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}

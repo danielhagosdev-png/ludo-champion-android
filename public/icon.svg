@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#b91c1c"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#15803d"/>
+    </linearGradient>
+    <linearGradient id="yellow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Base rounded icon background -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- Inner board container -->
+  <g transform="translate(64, 64)" filter="url(#shadow)">
+    <rect width="384" height="384" rx="36" fill="#f8fafc" stroke="#334155" stroke-width="6"/>
+
+    <!-- Red quadrant (top-left) -->
+    <rect x="12" y="12" width="148" height="148" rx="20" fill="url(#red)"/>
+    <rect x="36" y="36" width="100" height="100" rx="14" fill="#ffffff" opacity="0.92"/>
+    <circle cx="62" cy="62" r="14" fill="url(#red)"/>
+    <circle cx="110" cy="62" r="14" fill="url(#red)"/>
+    <circle cx="62" cy="110" r="14" fill="url(#red)"/>
+    <circle cx="110" cy="110" r="14" fill="url(#red)"/>
+
+    <!-- Green quadrant (top-right) -->
+    <rect x="224" y="12" width="148" height="148" rx="20" fill="url(#green)"/>
+    <rect x="248" y="36" width="100" height="100" rx="14" fill="#ffffff" opacity="0.92"/>
+    <circle cx="274" cy="62" r="14" fill="url(#green)"/>
+    <circle cx="322" cy="62" r="14" fill="url(#green)"/>
+    <circle cx="274" cy="110" r="14" fill="url(#green)"/>
+    <circle cx="322" cy="110" r="14" fill="url(#green)"/>
+
+    <!-- Blue quadrant (bottom-left) -->
+    <rect x="12" y="224" width="148" height="148" rx="20" fill="url(#blue)"/>
+    <rect x="36" y="248" width="100" height="100" rx="14" fill="#ffffff" opacity="0.92"/>
+    <circle cx="62" cy="274" r="14" fill="url(#blue)"/>
+    <circle cx="110" cy="274" r="14" fill="url(#blue)"/>
+    <circle cx="62" cy="322" r="14" fill="url(#blue)"/>
+    <circle cx="110" cy="322" r="14" fill="url(#blue)"/>
+
+    <!-- Yellow quadrant (bottom-right) -->
+    <rect x="224" y="224" width="148" height="148" rx="20" fill="url(#yellow)"/>
+    <rect x="248" y="248" width="100" height="100" rx="14" fill="#ffffff" opacity="0.92"/>
+    <circle cx="274" cy="274" r="14" fill="url(#yellow)"/>
+    <circle cx="322" cy="274" r="14" fill="url(#yellow)"/>
+    <circle cx="274" cy="322" r="14" fill="url(#yellow)"/>
+    <circle cx="322" cy="322" r="14" fill="url(#yellow)"/>
+
+    <!-- Center Dice -->
+    <rect x="142" y="142" width="100" height="100" rx="18" fill="#ffffff" stroke="#e2e8f0" stroke-width="4" filter="url(#shadow)"/>
+    <!-- 6 pips on dice -->
+    <circle cx="166" cy="166" r="7" fill="#dc2626"/>
+    <circle cx="166" cy="192" r="7" fill="#dc2626"/>
+    <circle cx="166" cy="218" r="7" fill="#dc2626"/>
+    <circle cx="218" cy="166" r="7" fill="#dc2626"/>
+    <circle cx="218" cy="192" r="7" fill="#dc2626"/>
+    <circle cx="218" cy="218" r="7" fill="#dc2626"/>
+  </g>
+</svg>

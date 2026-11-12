@@ -1,0 +1,6 @@
+{
+  "name": "Ludo Champion Android",
+  "description": "A premier Android-styled Ludo board game app with authentic rules, smart AI bots, local pass & play, 3D animated dice, tactile haptics, and responsive mobile design.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
