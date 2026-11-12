@@ -21,6 +21,9 @@ import {
 } from './utils/ludoBoard';
 import { chooseBotMove } from './utils/botAI';
 import { sound } from './utils/audio';
+import { localAvatar } from './utils/avatars';
+import { loadSavedMatch, saveMatch } from './utils/savedMatch';
+import { motion, useAnimationControls } from 'motion/react';
 import { LudoBoard } from './components/LudoBoard';
 import { PlayerCard } from './components/PlayerCard';
 import { RulesModal } from './components/RulesModal';
@@ -52,7 +55,7 @@ const INITIAL_PLAYERS_DATA: Omit<Player, 'tokens' | 'hasWon' | 'rank' | 'stats'>
     country: 'Global',
     flag: '🌐',
     coins: 1000,
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Ruby',
+    avatar: localAvatar('red', 'bot'),
   },
   {
     id: 'p2',
@@ -62,7 +65,7 @@ const INITIAL_PLAYERS_DATA: Omit<Player, 'tokens' | 'hasWon' | 'rank' | 'stats'>
     country: 'Global',
     flag: '🌐',
     coins: 1000,
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Jade',
+    avatar: localAvatar('green', 'bot'),
   },
   {
     id: 'p3',
@@ -72,7 +75,7 @@ const INITIAL_PLAYERS_DATA: Omit<Player, 'tokens' | 'hasWon' | 'rank' | 'stats'>
     country: 'Global',
     flag: '🌐',
     coins: 1000,
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Amber',
+    avatar: localAvatar('yellow', 'bot'),
   },
   {
     id: 'p4',
@@ -83,7 +86,7 @@ const INITIAL_PLAYERS_DATA: Omit<Player, 'tokens' | 'hasWon' | 'rank' | 'stats'>
     flag: '🌐',
     coins: 1000,
     gems: 50,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Player',
+    avatar: localAvatar('blue', 'human'),
   },
 ];
 
@@ -127,52 +130,84 @@ function initializePlayers(playerCount: 2 | 3 | 4, mode: 'classic' | '2player' |
 }
 
 export default function App() {
-  const [settings, setSettings] = useState<GameSettings>(DEFAULT_SETTINGS);
+  // Resume the last match if one was saved in this browser
+  const [restored] = useState(loadSavedMatch);
+
+  const [settings, setSettings] = useState<GameSettings>(restored?.settings ?? DEFAULT_SETTINGS);
   const [players, setPlayers] = useState<Player[]>(() =>
-    initializePlayers(DEFAULT_SETTINGS.playerCount, DEFAULT_SETTINGS.mode)
+    restored?.players ?? initializePlayers(DEFAULT_SETTINGS.playerCount, DEFAULT_SETTINGS.mode)
   );
   // Blue (bottom-left, the human player) starts first
   const [activePlayerIndex, setActivePlayerIndex] = useState<number>(() => {
+    if (restored) return restored.activePlayerIndex;
     const blueIdx = INITIAL_PLAYERS_DATA.findIndex((p) => p.color === 'blue');
     return blueIdx !== -1 ? blueIdx : 0;
   });
 
-  const [diceValue, setDiceValue] = useState<number | null>(null);
+  const [diceValue, setDiceValue] = useState<number | null>(restored?.diceValue ?? null);
   const [isRolling, setIsRolling] = useState<boolean>(false);
   const [isMoving, setIsMoving] = useState<boolean>(false);
   const [movableTokenIds, setMovableTokenIds] = useState<number[]>([]);
-  const [consecutiveSixes, setConsecutiveSixes] = useState<number>(0);
-  const [extraTurnStreak, setExtraTurnStreak] = useState<number>(0);
+  const [consecutiveSixes, setConsecutiveSixes] = useState<number>(restored?.consecutiveSixes ?? 0);
+  const [extraTurnStreak, setExtraTurnStreak] = useState<number>(restored?.extraTurnStreak ?? 0);
   const [destinationPreview, setDestinationPreview] = useState<{
     row: number;
     col: number;
     tokenId: number;
   } | null>(null);
 
-  const [totalTurns, setTotalTurns] = useState<number>(0);
-  const [rollHistory, setRollHistory] = useState<number[]>([]);
-  const [gameEvents, setGameEvents] = useState<GameEventMessage[]>([
-    {
-      id: 'init',
-      text: 'Match started! Tap your dice to roll.',
-      type: 'roll',
-      timestamp: Date.now(),
-    },
-  ]);
+  const [totalTurns, setTotalTurns] = useState<number>(restored?.totalTurns ?? 0);
+  const [rollHistory, setRollHistory] = useState<number[]>(restored?.rollHistory ?? []);
+  const [gameEvents, setGameEvents] = useState<GameEventMessage[]>(() =>
+    restored
+      ? [
+          { id: 'resume', text: 'Welcome back! Your match was restored.', type: 'roll', timestamp: Date.now() },
+          ...restored.gameEvents.slice(0, 4),
+        ]
+      : [
+          {
+            id: 'init',
+            text: 'Match started! Tap your dice to roll.',
+            type: 'roll',
+            timestamp: Date.now(),
+          },
+        ]
+  );
 
-  const [winner, setWinner] = useState<Player | null>(null);
-  const [winningTeamName, setWinningTeamName] = useState<string | undefined>(undefined);
-  const [matchOver, setMatchOver] = useState<boolean>(false);
-  const [nextRank, setNextRank] = useState<number>(1);
+  const [winner, setWinner] = useState<Player | null>(restored?.winner ?? null);
+  const [winningTeamName, setWinningTeamName] = useState<string | undefined>(restored?.winningTeamName);
+  const [matchOver, setMatchOver] = useState<boolean>(restored?.matchOver ?? false);
+  const [nextRank, setNextRank] = useState<number>(restored?.nextRank ?? 1);
 
   // Modals
   const [isLobbyOpen, setIsLobbyOpen] = useState<boolean>(false);
   const [isRulesOpen, setIsRulesOpen] = useState<boolean>(false);
   const [isStatsOpen, setIsStatsOpen] = useState<boolean>(false);
-  const [isWinnerModalOpen, setIsWinnerModalOpen] = useState<boolean>(false);
+  const [isWinnerModalOpen, setIsWinnerModalOpen] = useState<boolean>(restored?.matchOver ?? false);
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
 
   const botTurnTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Capture feedback: burst on the board cell plus a short board shake
+  const [captureFx, setCaptureFx] = useState<{
+    key: number;
+    row: number;
+    col: number;
+    color: PlayerColor;
+  } | null>(null);
+  const boardShake = useAnimationControls();
+
+  useEffect(() => {
+    if (!captureFx) return;
+    const t = setTimeout(() => setCaptureFx(null), 900);
+    return () => clearTimeout(t);
+  }, [captureFx]);
+
+  // Keep the sound engine in sync with settings (including restored ones)
+  useEffect(() => {
+    sound.enabled = settings.soundEnabled;
+    sound.hapticsEnabled = settings.hapticsEnabled;
+  }, [settings.soundEnabled, settings.hapticsEnabled]);
 
   const toggleSound = () => {
     const nextVal = !settings.soundEnabled;
@@ -364,6 +399,16 @@ export default function App() {
         if (captures.length > 0) {
           sound.playCapture();
           earnedBonusRoll = true;
+          setCaptureFx({
+            key: Date.now(),
+            row: destCoord.row,
+            col: destCoord.col,
+            color: nextPlayers[captures[0].playerIndex].color,
+          });
+          boardShake.start({
+            x: [0, -7, 7, -5, 5, -2, 0],
+            transition: { duration: 0.45, ease: 'easeOut' },
+          });
 
           captures.forEach((cap) => {
             const oppPlayer = nextPlayers[cap.playerIndex];
@@ -567,6 +612,43 @@ export default function App() {
     };
   }, [activePlayer, diceValue, isRolling, isMoving, matchOver, handleRollDice, handleTokenMove, players, settings.botDifficulty, settings.blockingRule, advanceTurn, getControlledPlayer]);
 
+  // Save the match whenever the board settles (not mid-roll or mid-move)
+  useEffect(() => {
+    if (isRolling || isMoving) return;
+    saveMatch({
+      version: 1,
+      settings,
+      players: players.map((p) => ({ ...p, chatBubble: null })),
+      activePlayerIndex,
+      diceValue,
+      consecutiveSixes,
+      extraTurnStreak,
+      totalTurns,
+      rollHistory: rollHistory.slice(0, 50),
+      gameEvents,
+      winner,
+      winningTeamName,
+      matchOver,
+      nextRank,
+    });
+  }, [settings, players, activePlayerIndex, diceValue, consecutiveSixes, extraTurnStreak, totalTurns, rollHistory, gameEvents, winner, winningTeamName, matchOver, nextRank, isRolling, isMoving]);
+
+  // If the page was reloaded after a human rolled but before they moved, restore that choice
+  const resumedRollRef = useRef(false);
+  useEffect(() => {
+    if (resumedRollRef.current) return;
+    resumedRollRef.current = true;
+    if (!restored || restored.diceValue === null || matchOver) return;
+    const controlled = getControlledPlayer();
+    if (!controlled || activePlayer?.type !== 'human') return;
+    const movable = getMovableTokens(controlled, restored.diceValue, players, settings.blockingRule);
+    if (movable.length > 0) {
+      setMovableTokenIds(movable);
+    } else {
+      advanceTurn(false);
+    }
+  }, [restored, matchOver, getControlledPlayer, activePlayer, players, settings.blockingRule, advanceTurn]);
+
   // Restart match with existing settings
   const handleRestartSameMatch = () => {
     const fresh = initializePlayers(settings.playerCount, settings.mode);
@@ -602,13 +684,11 @@ export default function App() {
       name: slot.name || `Player ${idx + 1}`,
       color: slot.color || 'red',
       type: slot.type || 'human',
-      country: slot.country || 'India',
-      flag: slot.flag || '🇮🇳',
-      coins: slot.coins || 10000,
-      gems: slot.gems || 100,
-      avatar:
-        slot.avatar ||
-        `https://api.dicebear.com/7.x/bottts/svg?seed=${slot.name || idx}`,
+      country: slot.country || 'Global',
+      flag: slot.flag || '🌐',
+      coins: slot.coins || 1000,
+      gems: slot.gems || 50,
+      avatar: slot.avatar || localAvatar(slot.color || 'red', slot.type || 'human'),
       tokens: createInitialTokens(slot.color || 'red', tokenCount),
       hasWon: false,
       rank: null,
@@ -780,14 +860,17 @@ export default function App() {
 
         {/* Center: The Ludo Board */}
         <div className="relative z-10 flex-1 flex items-center justify-center px-1 my-auto">
-          <LudoBoard
-            players={players}
-            activePlayerIndex={activePlayerIndex}
-            movableTokenIds={movableTokenIds}
-            onTokenClick={handleTokenMove}
-            isMoving={isMoving}
-            destinationPreview={destinationPreview}
-          />
+          <motion.div animate={boardShake} className="w-full">
+            <LudoBoard
+              players={players}
+              activePlayerIndex={activePlayerIndex}
+              movableTokenIds={movableTokenIds}
+              onTokenClick={handleTokenMove}
+              isMoving={isMoving}
+              destinationPreview={destinationPreview}
+              captureFx={captureFx}
+            />
+          </motion.div>
         </div>
 
         {/* Bottom Player Cards Row */}

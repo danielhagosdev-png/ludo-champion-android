@@ -7,7 +7,7 @@ import {
   getBlockAtCoordinate,
 } from '../utils/ludoBoard';
 import { Trophy, Star, ShieldAlert } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface LudoBoardProps {
   players: Player[];
@@ -16,6 +16,7 @@ interface LudoBoardProps {
   onTokenClick: (tokenId: number, tokenColor?: PlayerColor) => void;
   isMoving: boolean;
   destinationPreview: { row: number; col: number; tokenId: number } | null;
+  captureFx?: { key: number; row: number; col: number; color: PlayerColor } | null;
 }
 
 export const LudoBoard: React.FC<LudoBoardProps> = ({
@@ -25,6 +26,7 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
   onTokenClick,
   isMoving,
   destinationPreview,
+  captureFx = null,
 }) => {
   const activePlayer = players[activePlayerIndex];
   const activePlayerAllHome = activePlayer ? activePlayer.tokens.every((t) => t.isFinished) : false;
@@ -374,7 +376,7 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
   return (
     <div className="relative w-full max-w-[340px] sm:max-w-[380px] aspect-square mx-auto p-1.5 sm:p-2 rounded-2xl bg-white border-4 border-[#07244c] shadow-2xl flex flex-col justify-center">
       {/* 15x15 Ludo Board Grid */}
-      <div className="w-full h-full grid grid-cols-15 grid-rows-15 rounded-xl overflow-hidden bg-white border border-slate-400">
+      <div className="relative w-full h-full grid grid-cols-15 grid-rows-15 rounded-xl overflow-hidden bg-white border border-slate-400">
         {/* Quadrant 1: Red Yard (Top-Left, 6x6) */}
         <div className="col-span-6 row-span-6">
           {renderYard('red', 'Red')}
@@ -427,6 +429,52 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
         <div className="col-span-6 row-span-6">
           {renderYard('yellow', 'Yellow')}
         </div>
+
+        {/* Capture burst: the captured pawn poofs away with a ring and sparks */}
+        <AnimatePresence>
+          {captureFx && (
+            <motion.div
+              key={captureFx.key}
+              className="absolute pointer-events-none z-40 flex items-center justify-center"
+              style={{
+                left: `${(captureFx.col / 15) * 100}%`,
+                top: `${(captureFx.row / 15) * 100}%`,
+                width: `${100 / 15}%`,
+                height: `${100 / 15}%`,
+              }}
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.div
+                className="absolute w-full h-full rounded-full border-4"
+                style={{ borderColor: COLOR_THEMES[captureFx.color].primary }}
+                initial={{ scale: 0.4, opacity: 1 }}
+                animate={{ scale: 3, opacity: 0 }}
+                transition={{ duration: 0.6, ease: 'easeOut' }}
+              />
+              <motion.div
+                className="absolute w-3/4 h-3/4 rounded-full"
+                style={{ backgroundColor: COLOR_THEMES[captureFx.color].primary }}
+                initial={{ scale: 1, opacity: 0.9, y: 0 }}
+                animate={{ scale: 0, opacity: 0, y: -14 }}
+                transition={{ duration: 0.45, ease: 'easeIn' }}
+              />
+              {Array.from({ length: 8 }).map((_, i) => {
+                const angle = (i / 8) * Math.PI * 2;
+                return (
+                  <motion.span
+                    key={i}
+                    className="absolute w-1.5 h-1.5 rounded-full"
+                    style={{ backgroundColor: i % 2 ? '#ffffff' : COLOR_THEMES[captureFx.color].primary }}
+                    initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                    animate={{ x: Math.cos(angle) * 28, y: Math.sin(angle) * 28, opacity: 0, scale: 0.4 }}
+                    transition={{ duration: 0.6, ease: 'easeOut' }}
+                  />
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

@@ -22,10 +22,10 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
   const [slots, setSlots] = useState<
     { color: PlayerColor; name: string; type: PlayerType }[]
   >([
-    { color: 'red', name: 'Aravind', type: 'bot' },
-    { color: 'green', name: 'Surya Reddy', type: 'bot' },
-    { color: 'yellow', name: 'Queen B', type: 'bot' },
-    { color: 'blue', name: 'You (Rohan)', type: 'human' },
+    { color: 'red', name: 'Ruby', type: 'bot' },
+    { color: 'green', name: 'Jade', type: 'bot' },
+    { color: 'yellow', name: 'Amber', type: 'bot' },
+    { color: 'blue', name: 'You', type: 'human' },
   ]);
 
   if (!isOpen) return null;
@@ -104,10 +104,10 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
     sound.playClick();
     if (preset === 'vsBots') {
       setSlots([
-        { color: 'red', name: 'Bot Aravind', type: 'bot' },
-        { color: 'green', name: 'Bot Surya', type: 'bot' },
-        { color: 'yellow', name: 'Bot Queen', type: 'bot' },
-        { color: 'blue', name: 'You (Rohan)', type: 'human' },
+        { color: 'red', name: 'Ruby', type: 'bot' },
+        { color: 'green', name: 'Jade', type: 'bot' },
+        { color: 'yellow', name: 'Amber', type: 'bot' },
+        { color: 'blue', name: 'You', type: 'human' },
       ]);
     } else {
       setSlots([
