@@ -99,7 +99,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Main Player Profile Card with Ludo King blue & yellow frame */}
+      {/* Player profile card with blue & yellow frame */}
       <div
         className={`relative rounded-xl p-1 sm:p-1.5 flex flex-col justify-between transition-all duration-300 ${
           isActive
@@ -206,7 +206,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({
               </motion.div>
             )}
 
-            {/* Mascot Character on bottom-left player card like Ludo King screenshot */}
+            {/* Chat shortcut on the bottom-left player card */}
             {position === 'bottom-left' && (
               <div
                 onClick={(e) => {

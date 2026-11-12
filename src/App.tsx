@@ -42,48 +42,48 @@ const DEFAULT_SETTINGS: GameSettings = {
   blockingRule: true,
 };
 
-// Initial Player Profiles matching Ludo King screenshot
+// Default player profiles
 const INITIAL_PLAYERS_DATA: Omit<Player, 'tokens' | 'hasWon' | 'rank' | 'stats'>[] = [
   {
     id: 'p1',
-    name: 'Aravind',
+    name: 'Ruby',
     color: 'red',
     type: 'bot',
-    country: 'India',
-    flag: '🇮🇳',
-    coins: 17450,
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Aravind',
+    country: 'Global',
+    flag: '🌐',
+    coins: 1000,
+    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Ruby',
   },
   {
     id: 'p2',
-    name: 'Surya Reddy',
+    name: 'Jade',
     color: 'green',
     type: 'bot',
-    country: 'India',
-    flag: '🇮🇳',
-    coins: 1917875,
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Surya',
+    country: 'Global',
+    flag: '🌐',
+    coins: 1000,
+    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Jade',
   },
   {
     id: 'p3',
-    name: 'Queen B',
+    name: 'Amber',
     color: 'yellow',
     type: 'bot',
-    country: 'USA',
-    flag: '🇺🇸',
-    coins: 604735,
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=QueenB',
+    country: 'Global',
+    flag: '🌐',
+    coins: 1000,
+    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Amber',
   },
   {
     id: 'p4',
-    name: 'Rohanjakhade',
+    name: 'You',
     color: 'blue',
     type: 'human',
     country: 'Global',
     flag: '🌐',
-    coins: 12395,
-    gems: 798,
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rohan',
+    coins: 1000,
+    gems: 50,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Player',
   },
 ];
 
@@ -131,7 +131,7 @@ export default function App() {
   const [players, setPlayers] = useState<Player[]>(() =>
     initializePlayers(DEFAULT_SETTINGS.playerCount, DEFAULT_SETTINGS.mode)
   );
-  // Blue (bottom-left) starts first like the screenshot!
+  // Blue (bottom-left, the human player) starts first
   const [activePlayerIndex, setActivePlayerIndex] = useState<number>(() => {
     const blueIdx = INITIAL_PLAYERS_DATA.findIndex((p) => p.color === 'blue');
     return blueIdx !== -1 ? blueIdx : 0;
@@ -291,14 +291,37 @@ export default function App() {
     if (isExitingYard) {
       sound.playTokenOut();
       addEvent(`${activePlayer.name} rolled 6 and brought a ${movingPlayer.color} token out!`, 'move');
-    } else {
-      sound.playTokenStep();
     }
 
     const dummyToken: Token = { ...token, step: nextStep };
     const destCoord = getTokenCoordinate(dummyToken);
 
+    // Walk the token one cell at a time. Only the final cell triggers
+    // captures, safe squares and home checks.
+    const stepDelay = settings.fastAnimations ? 90 : 170;
+    const pathSteps = isExitingYard
+      ? []
+      : Array.from({ length: nextStep - token.step - 1 }, (_, i) => token.step + 1 + i);
+
+    pathSteps.forEach((step, i) => {
+      setTimeout(() => {
+        sound.playTokenStep();
+        setPlayers((prev) =>
+          prev.map((p) =>
+            p.id !== movingPlayer.id
+              ? p
+              : { ...p, tokens: p.tokens.map((t) => (t.id === tokenId ? { ...t, step } : t)) }
+          )
+        );
+      }, i * stepDelay);
+    });
+
+    const finalDelay = isExitingYard
+      ? (settings.fastAnimations ? 180 : 350)
+      : pathSteps.length * stepDelay;
+
     setTimeout(() => {
+      if (!isExitingYard) sound.playTokenStep();
       let earnedBonusRoll = diceValue === 6;
       let playerFinishedNow = false;
 
@@ -425,7 +448,7 @@ export default function App() {
       }
 
       advanceTurn(earnedBonusRoll);
-    }, settings.fastAnimations ? 180 : 350);
+    }, finalDelay);
   }, [activePlayer, diceValue, isMoving, activePlayerIndex, addEvent, settings.fastAnimations, settings.blockingRule, settings.mode, players, nextRank, triggerChatBubble, advanceTurn, getControlledPlayer, matchOver]);
 
   // Handle Dice Roll
@@ -633,8 +656,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#071933] text-white flex flex-col items-center justify-center p-0 sm:p-2 select-none">
-      {/* Smartphone Frame Outer Shell with authentic Ludo King embossed dice background */}
-      <div className="relative w-full max-w-[430px] min-h-[92vh] sm:min-h-[850px] rounded-[36px] sm:rounded-[46px] border-[8px] sm:border-[10px] border-[#0a1122] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col justify-between ludo-king-bg">
+      {/* Phone-style frame with embossed dice background */}
+      <div className="relative w-full max-w-[430px] min-h-[92vh] sm:min-h-[850px] rounded-[36px] sm:rounded-[46px] border-[8px] sm:border-[10px] border-[#0a1122] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col justify-between dice-pattern-bg">
         {/* Android Teardrop Camera Notch */}
         <div className="absolute top-0 inset-x-0 h-6 z-40 flex items-center justify-center pointer-events-none">
           <div className="w-24 h-4.5 bg-[#0a1122] rounded-b-xl flex items-center justify-center">

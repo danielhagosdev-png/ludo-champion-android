@@ -21,7 +21,7 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-white">Ludo King Guide &amp; Rules</h2>
+              <h2 className="text-base sm:text-lg font-bold text-white">Ludo Champion Guide &amp; Rules</h2>
               <p className="text-xs text-slate-400">Classic, 2-Player, and Team Up (2v2) Modes</p>
             </div>
           </div>

@@ -23,8 +23,8 @@
   backface-visibility: hidden;
 }
 
-/* Authentic Ludo King Blue Dice Background Pattern */
-.ludo-king-bg {
+/* Blue dice background pattern */
+.dice-pattern-bg {
   background-color: #0c2b55;
   background-image: 
     radial-gradient(circle at 50% 50%, rgba(20, 80, 160, 0.4) 0%, transparent 80%),

@@ -62,7 +62,7 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
     return STAR_COORDS.some((sc) => sc.row === r && sc.col === c);
   };
 
-  // Render a 3D Ludo King pin pawn token
+  // Render a 3D pin-style pawn token
   const renderPawnToken = (
     player: Player,
     token: Token,
@@ -85,6 +85,7 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
         disabled={!isMovable}
         whileHover={isMovable ? { scale: 1.25, zIndex: 40 } : {}}
         whileTap={isMovable ? { scale: 0.95 } : {}}
+        initial={{ scale: 1.2, y: -6 }}
         animate={{
           scale: 1,
           y: isMovable ? [0, -5, 0] : 0,
@@ -103,7 +104,7 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
           marginLeft: stackOffset > 0 ? `-${stackOffset * 5}px` : undefined,
         }}
       >
-        {/* Ludo King Map-pin Pawn SVG */}
+        {/* Map-pin pawn SVG */}
         <svg viewBox="0 0 32 40" className="w-full h-full filter drop-shadow">
           <defs>
             <radialGradient id={`grad-${player.color}-${token.id}`} cx="40%" cy="35%" r="60%">

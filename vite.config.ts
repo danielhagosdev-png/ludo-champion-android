@@ -14,9 +14,9 @@ export default defineConfig(() => {
         includeAssets: ['favicon.ico', 'icon.svg'],
         manifest: {
           id: '/',
-          name: 'Ludo Champion Android',
+          name: 'Ludo Champion',
           short_name: 'LudoChamp',
-          description: 'A premier Android-styled Ludo board game app with authentic rules, smart AI bots, local pass & play, and responsive mobile design.',
+          description: 'Classic Ludo with smart bots, local pass & play, team mode, animated dice and haptics. Installable on your phone.',
           theme_color: '#0f172a',
           background_color: '#020617',
           display: 'standalone',
@@ -43,10 +43,8 @@ export default defineConfig(() => {
       },
     },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modify—file watching is disabled to prevent flickering during agent edits.
+      // Set DISABLE_HMR=true to turn off hot reload and file watching
       hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
   };

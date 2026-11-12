@@ -1,20 +1,50 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Ludo Champion
 
-# Run and deploy your AI Studio app
+A classic Ludo board game built for phones. Play against bots, pass one phone around with friends, or team up 2 vs 2. It runs in the browser and can be installed to your home screen as an app (PWA).
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/45a4708f-5745-4944-a62d-dfc4f0a849e3
+- **Game modes:** Classic (4 tokens), Quick (2 tokens), 2-player head-to-head and Team Up (Blue + Green vs Red + Yellow)
+- **Bots** with easy, medium and hard difficulty, mixed freely with human players
+- **Local pass & play** on one device
+- **Rules you can toggle:** three sixes in a row forfeits the turn, and two stacked tokens form a blockade
+- **Feel:** tokens step cell by cell, 3D animated dice, sound effects and vibration on supported phones
+- **Stats** for rolls, sixes, captures and finished tokens, plus a live event log
+- **Installable** and works offline after the first load
 
-## Run Locally
+## Tech stack
 
-**Prerequisites:**  Node.js
+React 19, TypeScript, Vite, Tailwind CSS 4, Motion and vite-plugin-pwa.
 
+## Getting started
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Requires Node.js 20.19 or newer.
+
+```bash
+npm install
+npm run dev
+```
+
+Then open http://localhost:3000. On a phone on the same Wi-Fi, use your computer's local IP address with port 3000.
+
+## Scripts
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Start the dev server on port 3000 |
+| `npm run build` | Production build into `dist/` |
+| `npm run preview` | Serve the production build locally |
+| `npm run lint` | Type-check with TypeScript |
+
+## Project structure
+
+```
+src/
+  App.tsx              game state, turns, moves and captures
+  components/          board, dice, player cards and modals
+  utils/ludoBoard.ts   board geometry and rules
+  utils/botAI.ts       bot move selection
+  utils/audio.ts       sound effects and haptics
+  types/ludo.ts        shared types
+```
+
