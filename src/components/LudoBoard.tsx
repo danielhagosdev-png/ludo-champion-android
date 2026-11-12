@@ -99,7 +99,7 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
         }}
         className={`relative flex flex-col items-center justify-center select-none ${sizeClasses} ${
           isMovable
-            ? 'animate-token-movable cursor-pointer z-30 drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]'
+            ? 'animate-token-movable cursor-pointer z-30'
             : 'cursor-default drop-shadow-md'
         }`}
         style={{
@@ -116,8 +116,8 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
             </radialGradient>
             <linearGradient id="silver-rim" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#ffffff" />
-              <stop offset="50%" stopColor="#94a3b8" />
-              <stop offset="100%" stopColor="#475569" />
+              <stop offset="50%" stopColor="#d6c9ab" />
+              <stop offset="100%" stopColor="#8a7dad" />
             </linearGradient>
           </defs>
 
@@ -125,7 +125,7 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
           <ellipse cx="16" cy="37" rx="11" ry="3" fill="#000000" opacity="0.4" />
 
           {/* Metallic base ring */}
-          <ellipse cx="16" cy="34" rx="10" ry="3.5" fill="url(#silver-rim)" stroke="#1e293b" strokeWidth="0.8" />
+          <ellipse cx="16" cy="34" rx="10" ry="3.5" fill="url(#silver-rim)" stroke="#1c1433" strokeWidth="0.8" />
           <ellipse cx="16" cy="33.5" rx="8" ry="2.5" fill={theme.primaryDark} />
 
           {/* Main Pin Body */}
@@ -162,7 +162,7 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
         }}
       >
         {/* White Inner Home Arena with 4 circular token nests */}
-        <div className="w-[85%] h-[85%] bg-white rounded-2xl shadow-inner border-2 border-slate-300 flex items-center justify-center p-2">
+        <div className="w-[85%] h-[85%] bg-ivory rounded-2xl shadow-inner border-2 border-ivory-line flex items-center justify-center p-2">
           <div className="grid grid-cols-2 grid-rows-2 gap-2 sm:gap-3 place-items-center w-full h-full">
             {[0, 1, 2, 3].map((slotIdx) => {
               const tokenAtSlot = tokensInYard.find((t) => t.id === slotIdx);
@@ -215,25 +215,25 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
     const blockCheck = getBlockAtCoordinate({ row: r, col: c }, players);
 
     // Determine cell background styling
-    let cellBg = 'bg-white';
-    let cellBorder = 'border-slate-300';
+    let cellBg = 'bg-ivory';
+    let cellBorder = 'border-ivory-line';
     let cellGlow = '';
 
     if (isRedStart || isRedHomePath) {
-      cellBg = 'bg-[#e11d48] text-white';
-      cellBorder = 'border-rose-600';
+      cellBg = 'bg-ruby text-white';
+      cellBorder = 'border-ruby-dark/40';
     } else if (isGreenStart || isGreenHomePath) {
-      cellBg = 'bg-[#10b981] text-white';
-      cellBorder = 'border-emerald-600';
+      cellBg = 'bg-jade text-white';
+      cellBorder = 'border-jade-dark/40';
     } else if (isYellowStart || isYellowHomePath) {
-      cellBg = 'bg-[#f59e0b] text-slate-950';
-      cellBorder = 'border-amber-600';
+      cellBg = 'bg-amber text-ink';
+      cellBorder = 'border-amber-dark/40';
     } else if (isBlueStart || isBlueHomePath) {
-      cellBg = 'bg-[#0284c7] text-white';
-      cellBorder = 'border-sky-600';
+      cellBg = 'bg-sapphire text-white';
+      cellBorder = 'border-sapphire-dark/40';
     } else if (isStar) {
-      cellBg = 'bg-slate-50';
-      cellBorder = 'border-slate-300';
+      cellBg = 'bg-ivory-dim/60';
+      cellBorder = 'border-ivory-line';
     }
 
     // Destination preview highlight
@@ -243,7 +243,7 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
       destinationPreview.col === c;
 
     if (isDestination) {
-      cellGlow = 'ring-2 ring-emerald-500 ring-offset-1 z-20';
+      cellGlow = 'ring-2 ring-ink ring-offset-1 ring-offset-ivory z-20';
     }
 
     return (
@@ -257,7 +257,7 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
             <Star
               className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
                 isStar
-                  ? 'stroke-slate-500 fill-none'
+                  ? 'stroke-ink/45 fill-none'
                   : 'fill-white/80 stroke-white/90'
               }`}
             />
@@ -267,28 +267,28 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
         {/* Home Entrance Arrows */}
         {r === 7 && c === 0 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-0 h-0 border-y-[5px] border-y-transparent border-l-[8px] border-l-rose-500" />
+            <div className="w-0 h-0 border-y-[5px] border-y-transparent border-l-[8px] border-l-ruby" />
           </div>
         )}
         {r === 0 && c === 7 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-0 h-0 border-x-[5px] border-x-transparent border-t-[8px] border-t-emerald-500" />
+            <div className="w-0 h-0 border-x-[5px] border-x-transparent border-t-[8px] border-t-jade" />
           </div>
         )}
         {r === 7 && c === 14 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-0 h-0 border-y-[5px] border-y-transparent border-r-[8px] border-r-amber-500" />
+            <div className="w-0 h-0 border-y-[5px] border-y-transparent border-r-[8px] border-r-amber" />
           </div>
         )}
         {r === 14 && c === 7 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-0 h-0 border-x-[5px] border-x-transparent border-b-[8px] border-b-sky-500" />
+            <div className="w-0 h-0 border-x-[5px] border-x-transparent border-b-[8px] border-b-sapphire" />
           </div>
         )}
 
         {/* Blockade Shield Badge if blocked */}
         {blockCheck.isBlocked && (
-          <div className="absolute -top-1.5 -right-1.5 z-30 p-0.5 rounded-full bg-slate-900 border border-amber-400 text-amber-300 shadow">
+          <div className="absolute -top-1.5 -right-1.5 z-30 p-0.5 rounded-full bg-ink border border-ivory text-ivory shadow">
             <ShieldAlert className="w-2.5 h-2.5" />
           </div>
         )}
@@ -317,7 +317,7 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
                     )}
                   </div>
                 ))}
-                <span className="absolute -top-1 -right-1 px-1 py-0.2 rounded-full bg-slate-950 text-[8px] font-black text-amber-300 border border-amber-400/80 pointer-events-none z-30 shadow">
+                <span className="absolute -top-1 -right-1 px-1 py-0.2 rounded-full bg-ink text-[8px] font-black text-ivory border border-ivory/80 pointer-events-none z-30 shadow">
                   {tokensHere.length}
                 </span>
               </div>
@@ -338,24 +338,24 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
     };
 
     return (
-      <div className="relative w-full h-full bg-slate-900 border border-slate-600 overflow-hidden flex items-center justify-center shadow-inner">
+      <div className="relative w-full h-full bg-ink border border-ivory-line overflow-hidden flex items-center justify-center shadow-inner">
         {/* SVG Triangles meeting in center */}
         <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
           {/* Top Triangle: Green */}
-          <polygon points="0,0 100,0 50,50" fill={COLOR_THEMES.green.primary} stroke="#059669" strokeWidth="1" />
+          <polygon points="0,0 100,0 50,50" fill={COLOR_THEMES.green.primary} stroke="#fbf5e6" strokeWidth="1.5" />
           {/* Right Triangle: Yellow */}
-          <polygon points="100,0 100,100 50,50" fill={COLOR_THEMES.yellow.primary} stroke="#d97706" strokeWidth="1" />
+          <polygon points="100,0 100,100 50,50" fill={COLOR_THEMES.yellow.primary} stroke="#fbf5e6" strokeWidth="1.5" />
           {/* Bottom Triangle: Blue */}
-          <polygon points="100,100 0,100 50,50" fill={COLOR_THEMES.blue.primary} stroke="#0284c7" strokeWidth="1" />
+          <polygon points="100,100 0,100 50,50" fill={COLOR_THEMES.blue.primary} stroke="#fbf5e6" strokeWidth="1.5" />
           {/* Left Triangle: Red */}
-          <polygon points="0,100 0,0 50,50" fill={COLOR_THEMES.red.primary} stroke="#be123c" strokeWidth="1" />
+          <polygon points="0,100 0,0 50,50" fill={COLOR_THEMES.red.primary} stroke="#fbf5e6" strokeWidth="1.5" />
         </svg>
 
         {/* Finished counts inside triangles */}
         <span className="absolute top-1 inset-x-0 text-center text-[9px] font-black text-white drop-shadow">
           {finishedByColor.green > 0 ? `✓${finishedByColor.green}` : ''}
         </span>
-        <span className="absolute right-1 inset-y-0 flex items-center text-[9px] font-black text-slate-950 drop-shadow">
+        <span className="absolute right-1 inset-y-0 flex items-center text-[9px] font-black text-ink drop-shadow">
           {finishedByColor.yellow > 0 ? `✓${finishedByColor.yellow}` : ''}
         </span>
         <span className="absolute bottom-1 inset-x-0 text-center text-[9px] font-black text-white drop-shadow">
@@ -366,17 +366,17 @@ export const LudoBoard: React.FC<LudoBoardProps> = ({
         </span>
 
         {/* Center Golden Trophy */}
-        <div className="relative z-10 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-200 border-2 border-white shadow-lg flex items-center justify-center">
-          <Trophy className="w-4 h-4 text-slate-900" />
+        <div className="relative z-10 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gold border-2 border-ivory shadow-lg flex items-center justify-center">
+          <Trophy className="w-4 h-4 text-ink" />
         </div>
       </div>
     );
   };
 
   return (
-    <div className="relative w-full max-w-[340px] sm:max-w-[380px] aspect-square mx-auto p-1.5 sm:p-2 rounded-2xl bg-white border-4 border-[#07244c] shadow-2xl flex flex-col justify-center">
+    <div className="relative w-full max-w-[400px] aspect-square mx-auto p-1.5 sm:p-2 rounded-2xl bg-ivory border-[3px] border-felt-600 shadow-float flex flex-col justify-center">
       {/* 15x15 Ludo Board Grid */}
-      <div className="relative w-full h-full grid grid-cols-15 grid-rows-15 rounded-xl overflow-hidden bg-white border border-slate-400">
+      <div className="relative w-full h-full grid grid-cols-15 grid-rows-15 rounded-xl overflow-hidden bg-ivory border border-ivory-line">
         {/* Quadrant 1: Red Yard (Top-Left, 6x6) */}
         <div className="col-span-6 row-span-6">
           {renderYard('red', 'Red')}

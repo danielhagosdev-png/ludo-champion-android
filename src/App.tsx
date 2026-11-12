@@ -23,7 +23,8 @@ import { chooseBotMove } from './utils/botAI';
 import { sound } from './utils/audio';
 import { localAvatar } from './utils/avatars';
 import { loadSavedMatch, saveMatch } from './utils/savedMatch';
-import { motion, useAnimationControls } from 'motion/react';
+import { motion, AnimatePresence, useAnimationControls } from 'motion/react';
+import { Wordmark } from './components/Wordmark';
 import { LudoBoard } from './components/LudoBoard';
 import { PlayerCard } from './components/PlayerCard';
 import { RulesModal } from './components/RulesModal';
@@ -167,7 +168,7 @@ export default function App() {
       : [
           {
             id: 'init',
-            text: 'Match started! Tap your dice to roll.',
+            text: 'Roll a 6 to bring a token out.',
             type: 'roll',
             timestamp: Date.now(),
           },
@@ -180,7 +181,8 @@ export default function App() {
   const [nextRank, setNextRank] = useState<number>(restored?.nextRank ?? 1);
 
   // Modals
-  const [isLobbyOpen, setIsLobbyOpen] = useState<boolean>(false);
+  // First launch opens on match setup; a restored match goes straight to the board
+  const [isLobbyOpen, setIsLobbyOpen] = useState<boolean>(!restored);
   const [isRulesOpen, setIsRulesOpen] = useState<boolean>(false);
   const [isStatsOpen, setIsStatsOpen] = useState<boolean>(false);
   const [isWinnerModalOpen, setIsWinnerModalOpen] = useState<boolean>(restored?.matchOver ?? false);
@@ -653,7 +655,7 @@ export default function App() {
   const handleRestartSameMatch = () => {
     const fresh = initializePlayers(settings.playerCount, settings.mode);
     setPlayers(fresh);
-    setActivePlayerIndex(0);
+    setActivePlayerIndex(Math.max(0, fresh.findIndex((p) => p.type === 'human')));
     setDiceValue(null);
     setIsRolling(false);
     setIsMoving(false);
@@ -704,7 +706,8 @@ export default function App() {
     }));
 
     setPlayers(freshPlayers);
-    setActivePlayerIndex(0);
+    // A human goes first when there is one
+    setActivePlayerIndex(Math.max(0, freshPlayers.findIndex((p) => p.type === 'human')));
     setDiceValue(null);
     setIsRolling(false);
     setIsMoving(false);
@@ -720,7 +723,7 @@ export default function App() {
     setDestinationPreview(null);
     setIsLobbyOpen(false);
     setIsWinnerModalOpen(false);
-    addEvent(`New ${newSettings.mode === '2player' ? '2-Player' : newSettings.mode === 'teams' ? 'Team Up' : 'Classic'} match initialized!`, 'roll');
+    addEvent('New match. Roll the dice to begin.', 'roll');
   };
 
   // Quadrant player lookups
@@ -734,83 +737,82 @@ export default function App() {
   const yellowIndex = players.findIndex((p) => p.color === 'yellow');
   const blueIndex = players.findIndex((p) => p.color === 'blue');
 
+  const modeLabel =
+    settings.mode === '2player'
+      ? 'One on one'
+      : settings.mode === 'teams'
+      ? 'Team up'
+      : settings.mode === 'quick'
+      ? 'Quick'
+      : 'Classic';
+
+  const isYou = activePlayer?.name === 'You';
+  const turnHint = matchOver
+    ? 'Match over'
+    : !isHumanTurn
+    ? `${activePlayer?.name} is thinking…`
+    : diceValue === null
+    ? isYou
+      ? 'Your turn. Tap the dice.'
+      : `${activePlayer?.name}, tap the dice.`
+    : movableTokenIds.length > 0
+    ? 'Pick a token to move.'
+    : 'No moves this turn.';
+
   return (
-    <div className="min-h-screen bg-[#071933] text-white flex flex-col items-center justify-center p-0 sm:p-2 select-none">
-      {/* Phone-style frame with embossed dice background */}
-      <div className="relative w-full max-w-[430px] min-h-[92vh] sm:min-h-[850px] rounded-[36px] sm:rounded-[46px] border-[8px] sm:border-[10px] border-[#0a1122] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col justify-between dice-pattern-bg">
-        {/* Android Teardrop Camera Notch */}
-        <div className="absolute top-0 inset-x-0 h-6 z-40 flex items-center justify-center pointer-events-none">
-          <div className="w-24 h-4.5 bg-[#0a1122] rounded-b-xl flex items-center justify-center">
-            <div className="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-700 -mt-1" />
-          </div>
-        </div>
-
-        {/* Top Header / App Utilities */}
-        <div className="relative z-30 pt-4 px-3 flex items-center justify-between text-xs text-white/90 shrink-0">
-          {/* Top-Left: Red/Active player coins */}
-          <div className="flex items-center gap-1 bg-[#0b284f]/90 px-2 py-0.5 rounded-full border border-amber-500/30 text-[10px] font-bold text-amber-300 shadow">
-            <span>🪙</span>
-            <span>{(redPlayer || players[0])?.coins.toLocaleString()}</span>
-          </div>
-
-          {/* Center Title and Quick Buttons */}
-          <div className="flex items-center gap-1">
+    <div className="min-h-dvh bg-felt-950 text-ivory flex flex-col items-center justify-center sm:p-4 select-none">
+      {/* App surface: full screen on phones, a framed column on larger screens */}
+      <div className="velvet relative w-full max-w-[430px] min-h-dvh sm:min-h-[820px] sm:rounded-sheet sm:border sm:border-felt-600 sm:shadow-float overflow-hidden flex flex-col">
+        {/* Header */}
+        <header className="relative z-30 flex items-center justify-between px-4 pt-4 pb-2 shrink-0">
+          <Wordmark />
+          <div className="flex items-center gap-2">
             <PWAInstallButton />
             <button
               onClick={() => {
                 sound.playClick();
                 toggleSound();
               }}
-              className="p-1 rounded-lg text-slate-300 hover:text-white bg-[#0b284f]/80 border border-slate-700 transition"
-              title={settings.soundEnabled ? 'Mute' : 'Unmute'}
+              className="icon-btn"
+              aria-label={settings.soundEnabled ? 'Mute sound' : 'Turn sound on'}
             >
-              {settings.soundEnabled ? (
-                <Volume2 className="w-3.5 h-3.5 text-emerald-400" />
-              ) : (
-                <VolumeX className="w-3.5 h-3.5 text-slate-500" />
-              )}
+              {settings.soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
             </button>
             <button
               onClick={() => {
                 sound.playClick();
                 setIsRulesOpen(true);
               }}
-              className="p-1 rounded-lg text-slate-300 hover:text-white bg-[#0b284f]/80 border border-slate-700 transition"
-              title="Official Rules & Strategies"
+              className="icon-btn"
+              aria-label="How to play"
             >
-              <HelpCircle className="w-3.5 h-3.5" />
+              <HelpCircle className="w-4 h-4" />
             </button>
             <button
               onClick={() => {
                 sound.playClick();
                 setIsStatsOpen(true);
               }}
-              className="p-1 rounded-lg text-slate-300 hover:text-white bg-[#0b284f]/80 border border-slate-700 transition"
-              title="Game Statistics"
+              className="icon-btn"
+              aria-label="Match stats"
             >
-              <BarChart3 className="w-3.5 h-3.5" />
+              <BarChart3 className="w-4 h-4" />
             </button>
             <button
               onClick={() => {
                 sound.playClick();
                 setIsLobbyOpen(true);
               }}
-              className="p-1 rounded-lg text-slate-300 hover:text-white bg-[#0b284f]/80 border border-slate-700 transition"
-              title="Match Settings"
+              className="icon-btn"
+              aria-label="New match"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-4 h-4" />
             </button>
           </div>
+        </header>
 
-          {/* Top-Right: Green/Secondary player coins */}
-          <div className="flex items-center gap-1 bg-[#0b284f]/90 px-2 py-0.5 rounded-full border border-amber-500/30 text-[10px] font-bold text-amber-300 shadow">
-            <span>🪙</span>
-            <span>{(greenPlayer || players[1])?.coins.toLocaleString()}</span>
-          </div>
-        </div>
-
-        {/* Top Player Cards Row */}
-        <div className="relative z-20 flex items-center justify-between px-2 pt-1 pb-1 shrink-0">
+        {/* Top players */}
+        <div className="relative z-20 flex items-center justify-between px-3 pt-2 shrink-0">
           {redPlayer ? (
             <PlayerCard
               player={redPlayer}
@@ -823,23 +825,23 @@ export default function App() {
               onOpenChat={() => setIsChatOpen(true)}
             />
           ) : (
-            <div className="w-[130px] sm:w-[145px]" />
+            <div className="w-[132px] sm:w-[146px]" />
           )}
 
-          {/* Mode Pill & Game Event */}
-          <div className="flex-1 px-1 text-center truncate flex flex-col items-center">
-            <span className="text-[9px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/15 px-2 py-0.2 rounded-full border border-amber-500/30 mb-0.5">
-              {settings.mode === '2player'
-                ? '⚔️ 2-Player 1v1'
-                : settings.mode === 'teams'
-                ? '🛡️ Team Up (2v2)'
-                : settings.mode === 'quick'
-                ? '⚡ Quick Mode'
-                : '4-Player FFA'}
-            </span>
-            <span className="text-[10px] font-semibold text-slate-300 block truncate drop-shadow max-w-[140px]">
-              {gameEvents[0]?.text || 'Roll the dice!'}
-            </span>
+          <div className="flex-1 min-w-0 px-2 text-center">
+            <span className="block text-2xs font-semibold text-mist">{modeLabel}</span>
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={gameEvents[0]?.id}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="block text-xs leading-snug text-ivory/90 line-clamp-3"
+              >
+                {gameEvents[0]?.text}
+              </motion.span>
+            </AnimatePresence>
           </div>
 
           {greenPlayer ? (
@@ -854,12 +856,12 @@ export default function App() {
               onOpenChat={() => setIsChatOpen(true)}
             />
           ) : (
-            <div className="w-[130px] sm:w-[145px]" />
+            <div className="w-[132px] sm:w-[146px]" />
           )}
         </div>
 
-        {/* Center: The Ludo Board */}
-        <div className="relative z-10 flex-1 flex items-center justify-center px-1 my-auto">
+        {/* Board */}
+        <div className="relative z-10 flex-1 flex items-center justify-center px-3 py-4">
           <motion.div animate={boardShake} className="w-full">
             <LudoBoard
               players={players}
@@ -873,8 +875,8 @@ export default function App() {
           </motion.div>
         </div>
 
-        {/* Bottom Player Cards Row */}
-        <div className="relative z-20 flex items-center justify-between px-2 pt-1 pb-2 shrink-0">
+        {/* Bottom players */}
+        <div className="relative z-20 flex items-center justify-between px-3 pb-5 shrink-0">
           {bluePlayer ? (
             <PlayerCard
               player={bluePlayer}
@@ -887,28 +889,22 @@ export default function App() {
               onOpenChat={() => setIsChatOpen(true)}
             />
           ) : (
-            <div className="w-[130px] sm:w-[145px]" />
+            <div className="w-[132px] sm:w-[146px]" />
           )}
 
-          {/* Bottom Center Turn Hint */}
-          <div className="flex-1 flex flex-col items-center justify-center px-1 text-center">
-            {isHumanTurn ? (
-              diceValue === null ? (
-                <span className="text-[10px] sm:text-[11px] font-bold text-amber-300 animate-pulse bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-500/40">
-                  Tap Die to Roll
-                </span>
-              ) : movableTokenIds.length > 0 ? (
-                <span className="text-[10px] sm:text-[11px] font-bold text-emerald-300 animate-bounce bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/40">
-                  Tap Token to Move
-                </span>
-              ) : (
-                <span className="text-[10px] text-slate-400">No Legal Moves</span>
-              )
-            ) : (
-              <span className="text-[10px] text-slate-300 animate-pulse">
-                {activePlayer?.name} is thinking...
-              </span>
-            )}
+          {/* Turn status: one message, coloured by whose turn it is */}
+          <div className="flex-1 min-w-0 px-2 text-center" aria-live="polite">
+            <motion.span
+              key={turnHint}
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.2 }}
+              className={`inline-block font-display font-bold text-sm leading-snug ${
+                isHumanTurn && !matchOver ? 'text-ivory' : 'text-mist'
+              }`}
+            >
+              {turnHint}
+            </motion.span>
           </div>
 
           {yellowPlayer ? (
@@ -923,13 +919,8 @@ export default function App() {
               onOpenChat={() => setIsChatOpen(true)}
             />
           ) : (
-            <div className="w-[130px] sm:w-[145px]" />
+            <div className="w-[132px] sm:w-[146px]" />
           )}
-        </div>
-
-        {/* Android Gesture Bar */}
-        <div className="h-4 flex items-center justify-center bg-black/40 shrink-0">
-          <div className="w-28 h-1 bg-white/40 rounded-full" />
         </div>
       </div>
 
@@ -960,6 +951,7 @@ export default function App() {
         isOpen={isLobbyOpen}
         initialSettings={settings}
         onStartGame={handleStartGame}
+        onClose={() => setIsLobbyOpen(false)}
       />
 
       <ChatEmojiModal

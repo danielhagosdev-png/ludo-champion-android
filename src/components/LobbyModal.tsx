@@ -2,18 +2,21 @@ import React, { useState } from 'react';
 import { GameSettings, GameMode, Player, PlayerColor, PlayerType } from '../types/ludo';
 import { COLOR_THEMES } from '../utils/ludoBoard';
 import { sound } from '../utils/audio';
-import { User, Bot, Play, Zap, Users, Swords, Sparkles, ShieldCheck } from 'lucide-react';
+import { User, Bot, Play, Zap, Users, Swords, ShieldCheck, X } from 'lucide-react';
+import { Wordmark } from './Wordmark';
 
 interface LobbyModalProps {
   isOpen: boolean;
   onStartGame: (settings: GameSettings, configuredPlayers: Partial<Player>[]) => void;
   initialSettings: GameSettings;
+  onClose: () => void;
 }
 
 export const LobbyModal: React.FC<LobbyModalProps> = ({
   isOpen,
   onStartGame,
   initialSettings,
+  onClose,
 }) => {
   const [selectedMode, setSelectedMode] = useState<GameMode>(initialSettings.mode || 'classic');
   const [twoPlayerPair, setTwoPlayerPair] = useState<'blue_green' | 'red_yellow'>('blue_green');
@@ -120,44 +123,34 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="w-full max-w-md rounded-3xl bg-slate-900 border border-slate-700 shadow-2xl p-4 sm:p-6 text-slate-100 flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 sheet-backdrop">
+      <div className="w-full max-w-md sheet p-4 sm:p-6 text-ivory flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800 shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-amber-500 to-emerald-500 p-0.5 flex items-center justify-center shadow">
-              <div className="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-amber-400" />
-              </div>
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-white">Ludo Match Setup</h2>
-              <p className="text-xs text-slate-400">Choose game mode &amp; opponents</p>
-            </div>
+        <div className="flex items-start justify-between pb-4 shrink-0">
+          <div>
+            <Wordmark size="lg" />
+            <p className="text-sm text-mist mt-1">Set up your match</p>
           </div>
+          <button onClick={onClose} className="icon-btn" aria-label="Close and return to the board">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => applyPreset('vsBots')}
-              className="text-[11px] font-medium px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
-            >
-              vs Bots
-            </button>
-            <button
-              onClick={() => applyPreset('passPlay')}
-              className="text-[11px] font-medium px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
-            >
-              Pass &amp; Play
-            </button>
-          </div>
+        <div className="grid grid-cols-2 gap-2 pb-3 shrink-0">
+          <button onClick={() => applyPreset('vsBots')} className="btn btn-quiet !min-h-9 !text-xs">
+            Me against bots
+          </button>
+          <button onClick={() => applyPreset('passPlay')} className="btn btn-quiet !min-h-9 !text-xs">
+            Pass and play
+          </button>
         </div>
 
         {/* Scrollable Configuration */}
         <div className="flex-1 overflow-y-auto py-3 space-y-4 text-xs sm:text-sm">
           {/* Game Mode Selector */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              Select Game Mode
+            <label className="field-label">
+              Game mode
             </label>
             <div className="grid grid-cols-2 gap-2">
               {/* 4-Player Classic */}
@@ -167,18 +160,15 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
                   sound.playClick();
                   setSelectedMode('classic');
                 }}
-                className={`p-2.5 rounded-2xl border text-left transition flex items-start gap-2 ${
-                  selectedMode === 'classic'
-                    ? 'bg-blue-500/15 border-blue-500/60 text-blue-200'
-                    : 'bg-slate-800/40 border-slate-800 text-slate-400 hover:text-slate-200'
-                }`}
+                aria-pressed={selectedMode === 'classic'}
+                className="choice p-3 text-left flex items-start gap-2"
               >
-                <div className="p-1 rounded-lg bg-blue-500/20 text-blue-400 shrink-0 mt-0.5">
+                <div className="p-1.5 rounded-chip bg-felt-600 text-ivory shrink-0">
                   <Users className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <span className="font-bold text-white block text-xs">4-Player FFA</span>
-                  <span className="text-[10px] text-slate-400">Free-for-all tournament</span>
+                  <span className="font-bold text-ivory block text-xs">Classic</span>
+                  <span className="text-[10px] text-mist">Four players, everyone for themselves</span>
                 </div>
               </button>
 
@@ -189,18 +179,15 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
                   sound.playClick();
                   setSelectedMode('2player');
                 }}
-                className={`p-2.5 rounded-2xl border text-left transition flex items-start gap-2 ${
-                  selectedMode === '2player'
-                    ? 'bg-rose-500/15 border-rose-500/60 text-rose-200'
-                    : 'bg-slate-800/40 border-slate-800 text-slate-400 hover:text-slate-200'
-                }`}
+                aria-pressed={selectedMode === '2player'}
+                className="choice p-3 text-left flex items-start gap-2"
               >
-                <div className="p-1 rounded-lg bg-rose-500/20 text-rose-400 shrink-0 mt-0.5">
+                <div className="p-1.5 rounded-chip bg-felt-600 text-ivory shrink-0">
                   <Swords className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <span className="font-bold text-white block text-xs">2-Player 1v1</span>
-                  <span className="text-[10px] text-slate-400">Fast &amp; direct battle</span>
+                  <span className="font-bold text-ivory block text-xs">One on one</span>
+                  <span className="text-[10px] text-mist">Two players across the board</span>
                 </div>
               </button>
 
@@ -211,18 +198,15 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
                   sound.playClick();
                   setSelectedMode('teams');
                 }}
-                className={`p-2.5 rounded-2xl border text-left transition flex items-start gap-2 ${
-                  selectedMode === 'teams'
-                    ? 'bg-amber-500/15 border-amber-500/60 text-amber-200'
-                    : 'bg-slate-800/40 border-slate-800 text-slate-400 hover:text-slate-200'
-                }`}
+                aria-pressed={selectedMode === 'teams'}
+                className="choice p-3 text-left flex items-start gap-2"
               >
-                <div className="p-1 rounded-lg bg-amber-500/20 text-amber-400 shrink-0 mt-0.5">
+                <div className="p-1.5 rounded-chip bg-felt-600 text-ivory shrink-0">
                   <ShieldCheck className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <span className="font-bold text-white block text-xs">Team Up (2v2)</span>
-                  <span className="text-[10px] text-slate-400">Blue+Green vs Red+Yellow</span>
+                  <span className="font-bold text-ivory block text-xs">Team up</span>
+                  <span className="text-[10px] text-mist">Two against two</span>
                 </div>
               </button>
 
@@ -233,18 +217,15 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
                   sound.playClick();
                   setSelectedMode('quick');
                 }}
-                className={`p-2.5 rounded-2xl border text-left transition flex items-start gap-2 ${
-                  selectedMode === 'quick'
-                    ? 'bg-emerald-500/15 border-emerald-500/60 text-emerald-200'
-                    : 'bg-slate-800/40 border-slate-800 text-slate-400 hover:text-slate-200'
-                }`}
+                aria-pressed={selectedMode === 'quick'}
+                className="choice p-3 text-left flex items-start gap-2"
               >
-                <div className="p-1 rounded-lg bg-emerald-500/20 text-emerald-400 shrink-0 mt-0.5">
+                <div className="p-1.5 rounded-chip bg-felt-600 text-ivory shrink-0">
                   <Zap className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <span className="font-bold text-white block text-xs">Quick Mode</span>
-                  <span className="text-[10px] text-slate-400">2 tokens each · snappy</span>
+                  <span className="font-bold text-ivory block text-xs">Quick</span>
+                  <span className="text-[10px] text-mist">Two tokens each</span>
                 </div>
               </button>
             </div>
@@ -252,30 +233,24 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
 
           {/* If 2-Player mode, choose opposite color pair */}
           {selectedMode === '2player' && (
-            <div className="p-3 rounded-2xl bg-slate-800/40 border border-slate-800">
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                2-Player Opposite Colors
+            <div className="p-3 rounded-2xl bg-felt-700/40 border border-felt-700">
+              <label className="field-label">
+                Colours
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => setTwoPlayerPair('blue_green')}
-                  className={`py-1.5 px-2 rounded-xl text-xs font-bold border transition ${
-                    twoPlayerPair === 'blue_green'
-                      ? 'bg-sky-500/20 border-sky-400 text-sky-200'
-                      : 'bg-slate-800 border-slate-700 text-slate-400'
-                  }`}
+                  aria-pressed={twoPlayerPair === 'blue_green'}
+                  className="choice py-2 px-2 text-xs font-bold"
                 >
                   Blue vs Green
                 </button>
                 <button
                   type="button"
                   onClick={() => setTwoPlayerPair('red_yellow')}
-                  className={`py-1.5 px-2 rounded-xl text-xs font-bold border transition ${
-                    twoPlayerPair === 'red_yellow'
-                      ? 'bg-rose-500/20 border-rose-400 text-rose-200'
-                      : 'bg-slate-800 border-slate-700 text-slate-400'
-                  }`}
+                  aria-pressed={twoPlayerPair === 'red_yellow'}
+                  className="choice py-2 px-2 text-xs font-bold"
                 >
                   Red vs Yellow
                 </button>
@@ -285,9 +260,9 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
 
           {/* If Team Up mode, explain team synergy */}
           {selectedMode === 'teams' && (
-            <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 leading-relaxed">
+            <div className="p-3 rounded-2xl bg-ivory/10 border border-ivory/30 text-xs text-ivory leading-relaxed">
               <strong>Team Up (2v2) Rules:</strong>
-              <div className="mt-1 space-y-0.5 text-[11px] text-slate-300">
+              <div className="mt-1 space-y-0.5 text-[11px] text-mist">
                 • <strong>Team 1:</strong> Blue + Green &nbsp;|&nbsp; <strong>Team 2:</strong> Red + Yellow<br />
                 • Both partners must bring all tokens home to win!<br />
                 • You cannot capture your teammate; together you can form <strong>Team Blocks</strong>!
@@ -297,8 +272,8 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
 
           {/* Bot Difficulty */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              Bot AI Difficulty
+            <label className="field-label">
+              Bot difficulty
             </label>
             <div className="grid grid-cols-3 gap-2">
               {(['easy', 'medium', 'hard'] as const).map((diff) => (
@@ -309,11 +284,8 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
                     sound.playClick();
                     setBotDifficulty(diff);
                   }}
-                  className={`py-1.5 rounded-xl text-xs font-semibold capitalize border transition ${
-                    botDifficulty === diff
-                      ? 'bg-amber-500/20 border-amber-500 text-amber-300'
-                      : 'bg-slate-800/60 border-slate-800 text-slate-400 hover:text-slate-200'
-                  }`}
+                  aria-pressed={botDifficulty === diff}
+                  className="choice py-2 text-xs font-semibold capitalize"
                 >
                   {diff}
                 </button>
@@ -323,8 +295,8 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
 
           {/* Player Lineup */}
           <div>
-            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              Player Lineup
+            <label className="field-label">
+              Players
             </label>
             <div className="space-y-1.5">
               {slots.map((slot, idx) => {
@@ -340,7 +312,7 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
                 return (
                   <div
                     key={slot.color}
-                    className="p-2 rounded-xl bg-slate-800/40 border border-slate-800 flex items-center justify-between gap-2"
+                    className="p-2 rounded-xl bg-felt-700/40 border border-felt-700 flex items-center justify-between gap-2"
                   >
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <div
@@ -351,7 +323,7 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
                         type="text"
                         value={slot.name}
                         onChange={(e) => handleNameChange(idx, e.target.value)}
-                        className="bg-transparent text-xs font-semibold text-white focus:outline-none focus:ring-1 focus:ring-emerald-400/50 rounded px-1 py-0.5 truncate flex-1"
+                        className="bg-transparent text-xs font-semibold text-ivory focus:outline-none focus:ring-1 focus:ring-ivory/60 rounded px-1 py-0.5 truncate flex-1"
                         maxLength={16}
                       />
                     </div>
@@ -361,8 +333,8 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
                       onClick={() => handleSlotTypeToggle(idx)}
                       className={`flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-semibold border transition shrink-0 ${
                         slot.type === 'human'
-                          ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
-                          : 'bg-purple-500/15 border-purple-500/40 text-purple-300'
+                          ? 'bg-ivory border-ivory text-ink'
+                          : 'bg-transparent border-felt-600 text-mist'
                       }`}
                     >
                       {slot.type === 'human' ? (
@@ -385,13 +357,10 @@ export const LobbyModal: React.FC<LobbyModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="pt-3 border-t border-slate-800 shrink-0">
-          <button
-            onClick={handleStart}
-            className="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 font-bold text-white text-sm transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 active:scale-98"
-          >
-            <Play className="w-4 h-4 fill-white" />
-            <span>Start {selectedMode === '2player' ? '2-Player Match' : selectedMode === 'teams' ? 'Team Up Match' : 'Match'}</span>
+        <div className="pt-4 shrink-0">
+          <button onClick={handleStart} className="btn btn-primary w-full">
+            <Play className="w-4 h-4 fill-ink" />
+            Start match
           </button>
         </div>
       </div>

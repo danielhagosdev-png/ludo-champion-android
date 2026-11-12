@@ -32,20 +32,20 @@ export const StatsDrawer: React.FC<StatsDrawerProps> = ({
   const maxRollCount = Math.max(...Object.values(distribution), 1);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-md rounded-t-3xl sm:rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl p-5 sm:p-6 text-slate-100 flex flex-col max-h-[85vh]">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 sheet-backdrop">
+      <div className="w-full max-w-md sheet p-5 sm:p-6 text-ivory flex flex-col max-h-[85vh]">
         {/* Grab handle on mobile */}
-        <div className="w-12 h-1.5 bg-slate-700 rounded-full mx-auto mb-3 sm:hidden" />
+        <div className="w-12 h-1.5 bg-felt-600 rounded-full mx-auto mb-3 sm:hidden" />
 
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="flex items-center justify-between pb-3 border-b border-felt-700">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400">
+            <div className="p-2 rounded-xl bg-sapphire/10 text-sapphire">
               <BarChart2 className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">Match Statistics</h2>
-              <div className="flex items-center gap-2 text-xs text-slate-400">
+              <h2 className="text-base font-bold text-ivory">Match Statistics</h2>
+              <div className="flex items-center gap-2 text-xs text-mist">
                 <span>{totalTurns} total turns</span>
                 <span>·</span>
                 <span>{totalRolls} dice rolls</span>
@@ -54,7 +54,7 @@ export const StatsDrawer: React.FC<StatsDrawerProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="p-1.5 rounded-xl text-mist hover:text-ivory hover:bg-felt-700 transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -64,7 +64,7 @@ export const StatsDrawer: React.FC<StatsDrawerProps> = ({
         <div className="flex-1 overflow-y-auto py-4 space-y-5">
           {/* Player Breakdown */}
           <div>
-            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5">
+            <h3 className="text-xs font-semibold text-mist mb-2.5">
               Player Performance
             </h3>
             <div className="space-y-2">
@@ -73,7 +73,7 @@ export const StatsDrawer: React.FC<StatsDrawerProps> = ({
                 return (
                   <div
                     key={player.id}
-                    className="p-3 rounded-2xl bg-slate-800/40 border border-slate-800 flex items-center justify-between"
+                    className="p-3 rounded-2xl bg-felt-700/40 border border-felt-700 flex items-center justify-between"
                   >
                     <div className="flex items-center gap-2.5">
                       <div
@@ -81,22 +81,22 @@ export const StatsDrawer: React.FC<StatsDrawerProps> = ({
                         style={{ backgroundColor: theme.primary }}
                       />
                       <div>
-                        <span className="text-sm font-bold text-white flex items-center gap-1.5">
+                        <span className="text-sm font-bold text-ivory flex items-center gap-1.5">
                           {player.name}
                           {player.type === 'bot' && (
-                            <span className="text-[9px] px-1 py-0.2 rounded bg-slate-700 text-slate-300 font-normal">
+                            <span className="text-[9px] px-1 py-0.2 rounded bg-felt-600 text-mist font-normal">
                               BOT
                             </span>
                           )}
                         </span>
-                        <div className="flex items-center gap-3 text-xs text-slate-400 mt-0.5">
+                        <div className="flex items-center gap-3 text-xs text-mist mt-0.5">
                           <span className="flex items-center gap-1">
-                            <Dices className="w-3 h-3 text-amber-400" />
+                            <Dices className="w-3 h-3 text-ivory" />
                             {player.stats.sixes} sixes
                           </span>
                           <span>·</span>
                           <span className="flex items-center gap-1">
-                            <Swords className="w-3 h-3 text-rose-400" />
+                            <Swords className="w-3 h-3 text-ruby" />
                             {player.stats.captures} captures
                           </span>
                         </div>
@@ -104,11 +104,11 @@ export const StatsDrawer: React.FC<StatsDrawerProps> = ({
                     </div>
 
                     <div className="text-right">
-                      <span className="text-xs font-semibold text-emerald-400 flex items-center justify-end gap-1">
+                      <span className="text-xs font-semibold text-jade flex items-center justify-end gap-1">
                         <Trophy className="w-3.5 h-3.5" />
                         {player.stats.tokensFinished} / {player.tokens.length}
                       </span>
-                      <span className="text-[10px] text-slate-500 block">finished</span>
+                      <span className="text-[10px] text-mist-dim block">finished</span>
                     </div>
                   </div>
                 );
@@ -118,10 +118,10 @@ export const StatsDrawer: React.FC<StatsDrawerProps> = ({
 
           {/* Dice Distribution Histogram */}
           <div>
-            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2.5">
+            <h3 className="text-xs font-semibold text-mist mb-2.5">
               Dice Frequency
             </h3>
-            <div className="p-3 rounded-2xl bg-slate-800/40 border border-slate-800">
+            <div className="p-3 rounded-2xl bg-felt-700/40 border border-felt-700">
               <div className="grid grid-cols-6 gap-2 text-center">
                 {[1, 2, 3, 4, 5, 6].map((num) => {
                   const count = distribution[num] || 0;
@@ -130,19 +130,19 @@ export const StatsDrawer: React.FC<StatsDrawerProps> = ({
 
                   return (
                     <div key={num} className="flex flex-col items-center justify-end">
-                      <span className="text-[10px] font-mono text-slate-400 mb-1">
+                      <span className="text-[10px] font-mono text-mist mb-1">
                         {count}
                       </span>
-                      <div className="w-full h-12 bg-slate-900 rounded-lg flex items-end justify-center p-1">
+                      <div className="w-full h-12 bg-felt-800 rounded-lg flex items-end justify-center p-1">
                         <div
                           className={`w-full rounded-md transition-all duration-500 ${
-                            num === 6 ? 'bg-amber-500' : 'bg-blue-500/80'
+                            num === 6 ? 'bg-ivory' : 'bg-sapphire/80'
                           }`}
                           style={{ height: `${barHeight}px` }}
                         />
                       </div>
-                      <span className="text-xs font-bold text-white mt-1.5">{num}</span>
-                      <span className="text-[9px] text-slate-500">{pct}%</span>
+                      <span className="text-xs font-bold text-ivory mt-1.5">{num}</span>
+                      <span className="text-[9px] text-mist-dim">{pct}%</span>
                     </div>
                   );
                 })}
@@ -152,10 +152,10 @@ export const StatsDrawer: React.FC<StatsDrawerProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="pt-3 border-t border-slate-800">
+        <div className="pt-3 border-t border-felt-700">
           <button
             onClick={onClose}
-            className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 font-semibold text-white text-sm transition"
+            className="w-full py-2.5 rounded-xl bg-felt-700 hover:bg-felt-600 font-semibold text-ivory text-sm transition"
           >
             Close
           </button>

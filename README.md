@@ -12,6 +12,10 @@ A classic Ludo board game built for phones. Play against bots, pass one phone ar
 - **Stats** for rolls, sixes, captures and finished tokens, plus a live event log
 - **Installable** and works offline after the first load
 
+## Design
+
+The look is built on a small set of design tokens in `src/index.css`: colours (velvet surfaces, an ivory board, and one jewel colour per player: ruby, jade, amber and sapphire), a type scale, radii, shadows and motion timings. Shared pieces such as buttons, sheets and option cards are defined there too, so new screens stay consistent. Fonts are bundled, so nothing loads from the network.
+
 ## Tech stack
 
 React 19, TypeScript, Vite, Tailwind CSS 4, Motion and vite-plugin-pwa.

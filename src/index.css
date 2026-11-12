@@ -1,82 +1,236 @@
 @import "tailwindcss";
-@custom-variant dark (&:where(.dark, .dark *));
+@import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource-variable/figtree";
+
+/*
+ * Ludo Champion design tokens.
+ * Identity: jewel pieces on a velvet tray. The four players (Ruby, Jade, Amber,
+ * Sapphire) carry all the colour; the app chrome stays aubergine and ivory.
+ * Gold is reserved for winning.
+ */
+@theme {
+  /* Surfaces (velvet) */
+  --color-felt-950: #120b21;
+  --color-felt-900: #1a1130;
+  --color-felt-800: #241842;
+  --color-felt-700: #302156;
+  --color-felt-600: #45327a;
+
+  /* Board and text */
+  --color-ivory: #fbf5e6;
+  --color-ivory-dim: #ebe1c9;
+  --color-ivory-line: #d6c9ab;
+  --color-ink: #1c1433;
+  --color-mist: #b9aed6;
+  --color-mist-dim: #8a7dad;
+
+  /* Players */
+  --color-ruby: #e23d5b;
+  --color-ruby-light: #ff8298;
+  --color-ruby-dark: #a31c3a;
+  --color-jade: #19a67b;
+  --color-jade-light: #55d6ab;
+  --color-jade-dark: #0c6f51;
+  --color-amber: #f2a31b;
+  --color-amber-light: #ffcb63;
+  --color-amber-dark: #b06f05;
+  --color-sapphire: #3d7ff0;
+  --color-sapphire-light: #86b4ff;
+  --color-sapphire-dark: #1f4fb3;
+
+  /* Winning */
+  --color-gold: #f6cf6a;
+  --color-gold-deep: #b8862a;
+
+  /* Type */
+  --font-display: 'Bricolage Grotesque Variable', 'Figtree Variable', system-ui, sans-serif;
+  --font-sans: 'Figtree Variable', system-ui, -apple-system, sans-serif;
+  --text-2xs: 0.6875rem;  /* 11px labels */
+  --text-xs: 0.75rem;     /* 12px secondary */
+  --text-sm: 0.875rem;    /* 14px body */
+  --text-base: 1rem;      /* 16px */
+  --text-lg: 1.25rem;     /* 20px sheet titles */
+  --text-xl: 1.5rem;      /* 24px */
+  --text-2xl: 2rem;       /* 32px hero */
+
+  /* Shape: small controls, cards, sheets */
+  --radius-chip: 0.5rem;
+  --radius-card: 1rem;
+  --radius-sheet: 1.75rem;
+
+  /* Elevation */
+  --shadow-raised: 0 1px 0 rgb(255 255 255 / 0.06) inset, 0 6px 16px -6px rgb(8 4 20 / 0.7);
+  --shadow-float: 0 1px 0 rgb(255 255 255 / 0.08) inset, 0 24px 48px -16px rgb(8 4 20 / 0.85);
+  --shadow-ledge: 0 3px 0 var(--color-ivory-line);
+
+  /* Motion */
+  --ease-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-fade-in: fade-in 200ms var(--ease-soft);
+  --animate-sheet-in: sheet-in 400ms var(--ease-spring);
+  --animate-beckon: beckon 1.6s var(--ease-soft) infinite;
+}
+
+:root {
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 400ms;
+}
 
 @layer base {
   body {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: var(--font-sans);
+    background: var(--color-felt-950);
+    color: var(--color-ivory);
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
 
   h1, h2, h3, .font-display {
-    font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ivory);
+    outline-offset: 2px;
   }
 }
 
-/* 3D Dice styling */
-.dice-cube {
-  transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.dice-face {
-  backface-visibility: hidden;
-}
-
-/* Blue dice background pattern */
-.dice-pattern-bg {
-  background-color: #0c2b55;
-  background-image: 
-    radial-gradient(circle at 50% 50%, rgba(20, 80, 160, 0.4) 0%, transparent 80%),
-    url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23194a85' fill-opacity='0.35'%3E%3Crect x='10' y='10' width='40' height='40' rx='8' fill='%231b4e8c' fill-opacity='0.45' stroke='%232563eb' stroke-opacity='0.25' stroke-width='2'/%3E%3Ccircle cx='20' cy='20' r='3.5' fill='%2338bdf8' fill-opacity='0.4'/%3E%3Ccircle cx='40' cy='20' r='3.5' fill='%2338bdf8' fill-opacity='0.4'/%3E%3Ccircle cx='20' cy='40' r='3.5' fill='%2338bdf8' fill-opacity='0.4'/%3E%3Ccircle cx='40' cy='40' r='3.5' fill='%2338bdf8' fill-opacity='0.4'/%3E%3Crect x='70' y='70' width='40' height='40' rx='8' fill='%231b4e8c' fill-opacity='0.45' stroke='%232563eb' stroke-opacity='0.25' stroke-width='2'/%3E%3Ccircle cx='80' cy='80' r='3.5' fill='%2338bdf8' fill-opacity='0.4'/%3E%3Ccircle cx='100' cy='100' r='3.5' fill='%2338bdf8' fill-opacity='0.4'/%3E%3Ccircle cx='90' cy='90' r='3.5' fill='%2338bdf8' fill-opacity='0.4'/%3E%3C/g%3E%3C/svg%3E");
-}
-
-/* Safe star shine */
-@keyframes star-pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.9;
+@layer components {
+  /* App background: velvet with a soft pool of light behind the board */
+  .velvet {
+    background:
+      radial-gradient(120% 60% at 50% 45%, rgb(69 50 122 / 0.55) 0%, transparent 70%),
+      var(--color-felt-900);
   }
-  50% {
-    transform: scale(1.18);
-    opacity: 1;
-    filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.8));
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    border-radius: var(--radius-card);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    transition: transform var(--duration-fast) var(--ease-soft),
+      box-shadow var(--duration-fast) var(--ease-soft),
+      background-color var(--duration-base) var(--ease-soft);
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--color-ivory);
+    color: var(--color-ink);
+    box-shadow: var(--shadow-ledge);
+  }
+  .btn-primary:hover { background: #fff; }
+  .btn-primary:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--color-ivory-line); }
+  .btn-quiet {
+    background: transparent;
+    color: var(--color-mist);
+    border: 1px solid var(--color-felt-600);
+  }
+  .btn-quiet:hover { color: var(--color-ivory); background: var(--color-felt-700); }
+  .btn-quiet:active { transform: scale(0.98); }
+
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9999px;
+    color: var(--color-mist);
+    background: rgb(48 33 86 / 0.7);
+    transition: transform var(--duration-fast) var(--ease-soft),
+      color var(--duration-base) var(--ease-soft),
+      background-color var(--duration-base) var(--ease-soft);
+    cursor: pointer;
+  }
+  .icon-btn:hover { color: var(--color-ivory); background: var(--color-felt-600); }
+  .icon-btn:active { transform: scale(0.9); }
+
+  /* Modals and drawers */
+  .sheet-backdrop {
+    background: rgb(18 11 33 / 0.78);
+    backdrop-filter: blur(6px);
+    animation: var(--animate-fade-in);
+  }
+  .sheet {
+    background: var(--color-felt-800);
+    border: 1px solid var(--color-felt-600);
+    border-radius: var(--radius-sheet);
+    box-shadow: var(--shadow-float);
+    color: var(--color-ivory);
+    animation: var(--animate-sheet-in);
+  }
+
+  /* Selectable option (game mode, difficulty) */
+  .choice {
+    border-radius: var(--radius-card);
+    border: 1.5px solid var(--color-felt-600);
+    background: rgb(48 33 86 / 0.45);
+    color: var(--color-mist);
+    transition: border-color var(--duration-base) var(--ease-soft),
+      background-color var(--duration-base) var(--ease-soft),
+      transform var(--duration-fast) var(--ease-soft);
+    cursor: pointer;
+  }
+  .choice:hover { border-color: var(--color-mist-dim); }
+  .choice:active { transform: scale(0.98); }
+  .choice[aria-pressed='true'] {
+    border-color: var(--color-ivory);
+    background: var(--color-felt-700);
+    color: var(--color-ivory);
+  }
+
+  .field-label {
+    display: block;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-mist);
+    margin-bottom: 0.5rem;
   }
 }
 
-.animate-star {
-  animation: star-pulse 2.2s infinite ease-in-out;
+/* Dice that is waiting for a tap */
+@keyframes beckon {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(251 245 230 / 0.55), var(--shadow-ledge); }
+  60% { box-shadow: 0 0 0 9px rgb(251 245 230 / 0), var(--shadow-ledge); }
 }
 
-/* Token movable bounce */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sheet-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Movable token halo */
 @keyframes token-glow {
-  0%, 100% {
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 14px 4px rgba(255, 255, 255, 0.7);
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 1), 0 0 20px 8px rgba(255, 255, 255, 0.95);
-    transform: translateY(-4px) scale(1.08);
-  }
+  0%, 100% { filter: drop-shadow(0 0 3px rgb(28 20 51 / 0.9)); }
+  50% { filter: drop-shadow(0 0 7px rgb(28 20 51 / 1)); }
 }
-
 .animate-token-movable {
   animation: token-glow 1.2s infinite ease-in-out;
   cursor: pointer;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.4);
+/* Scrollbars inside sheets */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgb(185 174 214 / 0.25); border-radius: 9999px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
